@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Team;
+use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
+use App\Requests\BuyRequest;
 use App\Requests\PaginationRequest;
 use App\Requests\TeamRequest;
 use App\Responses\TeamResponse;
@@ -83,5 +85,20 @@ class TeamsController extends AbstractController
         $this->entityManager->flush();
 
         return $this->json(TeamResponse::toArray($team));
+    }
+
+    #[Route('/teams/{teamId}/buy/players/{playerId}', methods: ['POST'])]
+    public function buy($teamId, $playerId, BuyRequest $request, PlayerRepository $playerRepository): JsonResponse
+    {
+        $team = $this->teamRepository->find($teamId);
+        $player = $playerRepository->find($playerId);
+
+        if (!$team || !$player) {
+            return $this->json(['message', 'Invalid data'], 404);
+        }
+
+        if ($team->getMoney() < $request->amount) {
+            return $this->json(['message', 'Insufficient balance'], 404);
+        }
     }
 }

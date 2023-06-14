@@ -8,24 +8,23 @@ use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints\Type;
 
-class TeamRequest extends BaseRequest
+class PlayerRequest extends BaseRequest
 {
     #[Type('string')]
     #[NotBlank()]
     #[Length(min: 1, max: 50)]
-    public $name;
+    public $firstName;
 
     #[Type('string')]
     #[NotBlank()]
     #[Length(min: 1, max: 50)]
-    public $country;
+    public $lastName;
 
     #[Type('numeric')]
     #[NotNull()]
     #[Range(min: 0)]
-    public $money;
+    public $value;
 
     #[Type('numeric')]
     public $teamId;
-
 }
