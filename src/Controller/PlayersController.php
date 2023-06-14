@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Player;
 use App\Repository\PlayerRepository;
 use App\Requests\PaginationRequest;
+use App\Requests\PlayerQuery;
 use App\Requests\PlayerRequest;
 use App\Responses\PlayerResponse;
 use App\Responses\TeamResponse;
@@ -23,11 +24,19 @@ class PlayersController extends AbstractController
     {}
 
     #[Route('/players', name: 'players_list')]
-    public function index(PaginationRequest $request): JsonResponse
+    public function index(PlayerQuery $request): JsonResponse
     {
-        $query = $this->playerRepository->createQueryBuilder('t')
-            ->orderBy('t.' . $request->sortBy, $request->dir)
-            ->getQuery();
+        $qb = $this->playerRepository->createQueryBuilder('t')
+            ->orderBy('t.' . $request->sortBy, $request->dir);
+        if ($request->teamId) {
+            $qb->where('t.team_id = :teamId')
+                ->setParameter('teamId', $request->teamId);
+        }
+        if ($request->name) {
+            $qb->where('CONCAT(t.first_name, " ", t.last_name) like :name')
+                ->setParameter('name', '%' . $request->name . '%');
+        }
+        $query = $qb->getQuery();
 
         $paginator = new Paginator($query);
 

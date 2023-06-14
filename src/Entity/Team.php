@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
 class Team
@@ -75,6 +76,23 @@ class Team
     {
         $this->money = $money;
 
+        return $this;
+    }
+
+    public function decreaseMoney(int $amount = 1): static
+    {
+        $this->money = $this->money - $amount;
+        if ($this->money < 0) {
+            throw new Exception('Exceed current balance');
+        }
+        return $this;
+    }
+    public function increaseMoney(int $amount = 1): static
+    {
+        $this->money = $this->money + $amount;
+        if ($this->money < 0) {
+            throw new Exception('Exceed current balance');
+        }
         return $this;
     }
 

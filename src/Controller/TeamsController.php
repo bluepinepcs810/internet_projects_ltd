@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Team;
+use App\Entity\Transaction;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
+use App\Repository\TransactionRepository;
 use App\Requests\BuyRequest;
 use App\Requests\PaginationRequest;
 use App\Requests\TeamRequest;
@@ -88,7 +90,7 @@ class TeamsController extends AbstractController
     }
 
     #[Route('/teams/{teamId}/buy/players/{playerId}', methods: ['POST'])]
-    public function buy($teamId, $playerId, BuyRequest $request, PlayerRepository $playerRepository): JsonResponse
+    public function buy($teamId, $playerId, BuyRequest $request, PlayerRepository $playerRepository, TransactionRepository $transactionRepository): JsonResponse
     {
         $team = $this->teamRepository->find($teamId);
         $player = $playerRepository->find($playerId);
@@ -100,5 +102,25 @@ class TeamsController extends AbstractController
         if ($team->getMoney() < $request->amount) {
             return $this->json(['message', 'Insufficient balance'], 404);
         }
+
+        $fromTeam = $player->getTeam();
+        if ($fromTeam) {
+            $fromTeam->increaseMoney($request->amount);
+            $team->decreaseMoney($request->amount);
+            $this->teamRepository->save($fromTeam);
+            $this->teamRepository->save($team);
+        }
+
+        $player->setTeam($team);
+        $playerRepository->save($player);
+
+        $transaction = new Transaction;
+        $transaction->setPlayer($player);
+        $transaction->setFromTeam($fromTeam);
+        $transaction->setToTeam($team);
+
+        $transactionRepository->save($transaction);
+
+        return $this->json(['message' => 'Success']);
     }
 }
