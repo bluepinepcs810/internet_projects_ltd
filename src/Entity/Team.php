@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\TeamRepository;
+use App\Requests\TeamRequest;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -77,7 +78,7 @@ class Team
         return $this;
     }
 
-    public function geLogo(): ?string
+    public function getLogo(): ?string
     {
         return $this->logo;
     }
@@ -115,6 +116,16 @@ class Team
                 $player->setTeam(null);
             }
         }
+
+        return $this;
+    }
+
+    public function fromRequest(TeamRequest $data)
+    {
+        $this->name = $data->name;
+        $this->country = $data->country;
+        $this->money = $data->money;
+        // TODO logo
 
         return $this;
     }
