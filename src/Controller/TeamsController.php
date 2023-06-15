@@ -24,10 +24,10 @@ class TeamsController extends AbstractController
     public function __construct(
         protected EntityManagerInterface $entityManager,
         protected TeamRepository $teamRepository
-    )
-    {}
+    ) {
+    }
     #[Route('/api/teams', name: 'team_list', methods: ['GET'])]
-    public function index(PaginationRequest $request): JsonResponse
+    public function index(PaginationRequest $request, PlayerRepository $playerRepository): JsonResponse
     {
         $request->validate();
 
@@ -45,6 +45,15 @@ class TeamsController extends AbstractController
             ->setFirstResult($request->getOffset())
             ->setMaxResults($request->perPage)
             ->getResult();
+        foreach ($teams as $team) {
+            $playerCount = $playerRepository->createQueryBuilder('p')
+                ->where('p.teamId = :teamId')
+                ->setParameter('teamId', $team->getId())
+                ->select('count(p.id)')
+                ->getQuery()
+                ->getSingleScalarResult();
+            $team->setPlayerCount($playerCount);
+        }
         $result = [
             'total' =>  $totalCount,
             'pages' =>  $totalPages,

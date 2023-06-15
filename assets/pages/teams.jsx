@@ -1,8 +1,9 @@
-import { Avatar, Button, Card, CardBody, CardHeader, Input, Typography } from '@material-tailwind/react';
+import { Avatar, Button, Card, CardBody, CardHeader, Input, Spinner, Typography } from '@material-tailwind/react';
 import React from 'react';
 import { useNavigate } from 'react-router';
 import { useTeamList } from '../hooks/api_hooks';
 import { useForm } from 'react-hook-form';
+import { DEFAULT_TEAM_LOGO } from '../helpers/constants';
 
 const Teams = () => {
     const navigate = useNavigate();
@@ -15,7 +16,8 @@ const Teams = () => {
     const {
         data,
         isSuccess,
-        hasNextPage
+        hasNextPage,
+        isLoading
     } = useTeamList({ search });
 
     return (
@@ -59,14 +61,12 @@ const Teams = () => {
                                 {isSuccess &&
                                     data.pages.map(page =>
                                         page.data.map(item => (
-                                            <tr>
+                                            <tr key={item.id} className='hover:bg-blue-gray-100 transition cursor-pointer'>
                                                 <td className='border-b border-blue-gray-50' style={{ maxWidth: '30px'}}>
-                                                    <div className='flex items-center gap-4'>
-                                                        {item.logo &&
-                                                            <img src={item.logo}
-                                                                className='w-24 h-16 object-contain'
-                                                            />
-                                                        }
+                                                    <div className='flex items-center gap-4 p-2'>
+                                                        <img src={item.logo || DEFAULT_TEAM_LOGO}
+                                                            className='w-20 h-16 object-contain'
+                                                        />
                                                     </div>
                                                 </td>
                                                 <td className='border-b border-blue-gray-50'>
@@ -85,29 +85,19 @@ const Teams = () => {
                                         ))
                                     )
                                 }
-                                <tr>
-                                    <td className='border-b border-blue-gray-50' style={{ maxWidth: '30px'}}>
-                                        <div className='flex items-center gap-4'>
-                                            <img src="http://t3.gstatic.com/images?q=tbn:ANd9GcTdlZboGqqXYQquR6s1qeDckeEdPetLAHMKbDaMpE0Pyn009AoV"
-                                                className='w-24 h-16 object-contain'
-                                            />
-                                        </div>
-                                    </td>
-                                    <td className='border-b border-blue-gray-50'>
-                                        FC. Barcelona
-                                    </td>
-                                    <td className='border-b border-blue-gray-50'>
-                                        Spain
-                                    </td>
-                                    <td className='border-b border-blue-gray-50'>
-                                        12512532
-                                    </td>
-                                    <td className='border-b border-blue-gray-50'>
-                                        20
-                                    </td>
-                                </tr>
+
                             </tbody>
                         </table>
+                        <div className='flex justify-center mt-4'>
+                            {isLoading &&
+                                <Spinner className='h-8 w-8' />
+                            }
+                            {!isLoading && hasNextPage &&
+                                <Button
+                                    variant='outline'
+                                >Load More</Button>
+                            }
+                        </div>
                     </div>
                 </CardBody>
             </Card>

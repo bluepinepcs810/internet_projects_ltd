@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "react-query"
+import { useInfiniteQuery, useQuery } from "react-query"
 import { TeamApi } from "../api/team"
 import { DEFAULT_PAGE_SIZE } from "../helpers/constants"
 
@@ -22,3 +22,11 @@ export const useTeamList = (filter) => {
     }
   )
 }
+
+export const useTeamDetail = (teamId) =>
+  useQuery(['retrieveTeam', teamId], () => {
+    if (!teamId) return undefined;
+    return TeamApi.retrieve(teamId);
+  }, {
+    enabled: !!teamId
+  })

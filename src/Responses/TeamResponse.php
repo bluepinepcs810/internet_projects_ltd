@@ -20,6 +20,7 @@ class TeamResponse
             'country' => $team->getCountry(),
             'money' =>  $team->getMoney(),
             'logo'  =>  $team->getLogo(),
+            'playerCount'   =>  $team->getPlayerCount()
         ];
     }
 }

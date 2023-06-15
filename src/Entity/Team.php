@@ -33,6 +33,8 @@ class Team
     #[ORM\OneToMany(mappedBy: 'team', targetEntity: Player::class)]
     private Collection $players;
 
+    private ?int $playerCount = 0;
+
     public function __construct()
     {
         $this->players = new ArrayCollection();
@@ -145,6 +147,16 @@ class Team
         $this->money = $data->money;
         // TODO logo
 
+        return $this;
+    }
+
+    public function getPlayerCount(): ?int
+    {
+        return $this->playerCount;
+    }
+    public function setPlayerCount(int $playerCount): static
+    {
+        $this->playerCount = $playerCount;
         return $this;
     }
 }

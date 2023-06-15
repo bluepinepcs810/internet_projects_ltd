@@ -65,7 +65,6 @@ const apiWrapper = (method, url, headers, data = null) => {
       } else {
         response = await axios.delete(absUrl, { headers: postHeader });
       }
-        console.log({ response });
       if (response.status < 300) {
         resolve(response.data);
       } else {

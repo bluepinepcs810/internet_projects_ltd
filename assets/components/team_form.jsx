@@ -48,7 +48,6 @@ const TeamForm = ({ data }) => {
         setLoading(true);
         TeamApi.create(data)
             .then(response => {
-                console.log({ response });
                 showSuccess('Successfully create');
                 navigate('/teams/' + response.id);
             })
@@ -90,14 +89,9 @@ const TeamForm = ({ data }) => {
                                 render={({ field }) => (
                                     <Select {...field} label="Country">
                                         {countries.map(country => (
-                                            <Option key={country.isoCode} value={country.name}>
+                                            <Option key={country.name} value={country.name}>
                                                 <div className="flex gap-x-2 items-center">
-                                                    <ReactCountryFlag
-                                                        countryCode={country.isoCode}
-                                                        svg
-                                                        cdnUrl="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/flags/1x1/"
-                                                        cdnSuffix="svg"
-                                                    />
+                                                    <img src={country.flag} className="w-6 h-4"/>
                                                     <div>{country.name}</div>
                                                 </div>
                                             </Option>
