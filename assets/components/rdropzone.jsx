@@ -4,6 +4,7 @@ import { useDropzone } from "react-dropzone";
 import { convertFileToFileType } from "../helpers/file";
 
 const Rdropzone = ({
+    dropzoneLabel,
     dropzoneClass,
     onChange,
     file
@@ -21,17 +22,17 @@ const Rdropzone = ({
     });
 
     return (
-        <div {...getRootProps()} className={"relative flex justify-center items-center border-2 border-dashed rounded-md group " + dropzoneClass}>
+        <div {...getRootProps()} className={"relative flex justify-center items-center border-2 border-dashed rounded-md group cursor-pointer " + dropzoneClass}>
             {file && (
                 <>
                     <img className="w-max-[200px] h-full absolute object-cover z-10" src={file.url ? file.url : file}/>
                     <div className="w-full h-full hidden group-hover:flex justify-center items-center z-20 bg-black opacity-50">
-                        <div className="uppercase text-white">Drag & Drop Image File</div>
+                        <div className="uppercase text-white">{dropzoneLabel ?? 'Drag & Drop Image File'}</div>
                     </div>
                 </>
             )}
             {!file &&
-                <div className="uppercase text-gray">Drag & Drop Image File</div>
+                <div className="uppercase text-gray">{dropzoneLabel ?? 'Drag & Drop Image File'}</div>
             }
             <input {...getInputProps()} />
         </div>

@@ -2,13 +2,11 @@
 
 namespace App\Requests;
 
+use App\Requests\PaginationRequest;
 use Symfony\Component\Validator\Constraints\Type;
 
-class PlayerQuery extends PaginationRequest
+class TeamQuery extends PaginationRequest
 {
-    #[Type('numeric')]
-    public $teamId;
-
     #[Type('string')]
-    public $search;
+    public $search = null;
 }

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { useTeamList } from '../hooks/api_hooks';
 import { useForm } from 'react-hook-form';
 import { DEFAULT_TEAM_LOGO } from '../helpers/constants';
+import useDebounce from '../hooks/useDebounce';
 
 const Teams = () => {
     const navigate = useNavigate();
@@ -13,12 +14,14 @@ const Teams = () => {
         }
     });
     const search = watch('search');
+    const debouncedSearch = useDebounce(search, 500);
     const {
         data,
         isSuccess,
         hasNextPage,
-        isLoading
-    } = useTeamList({ search });
+        isLoading,
+        fetchNextPage
+    } = useTeamList({ search: debouncedSearch });
 
     return (
         <div className='mt-12 mb-8 flex flex-col gap-12'>
@@ -40,7 +43,7 @@ const Teams = () => {
                             >+ Add a Team</Button>
                         </div>
                     </div>
-                    <div className='w-full overflow-x-auto'>
+                    <div className='w-full overflow-x-auto min-h-[300px]'>
                         <table className='w-full'>
                             <thead>
                                 <tr>
@@ -61,7 +64,9 @@ const Teams = () => {
                                 {isSuccess &&
                                     data.pages.map(page =>
                                         page.data.map(item => (
-                                            <tr key={item.id} className='hover:bg-blue-gray-100 transition cursor-pointer'>
+                                            <tr key={item.id} className='hover:bg-blue-gray-100 transition cursor-pointer'
+                                                onClick={() => navigate(`/teams/${item.id}`)}
+                                            >
                                                 <td className='border-b border-blue-gray-50' style={{ maxWidth: '30px'}}>
                                                     <div className='flex items-center gap-4 p-2'>
                                                         <img src={item.logo || DEFAULT_TEAM_LOGO}
@@ -95,6 +100,7 @@ const Teams = () => {
                             {!isLoading && hasNextPage &&
                                 <Button
                                     variant='outline'
+                                    onClick={fetchNextPage}
                                 >Load More</Button>
                             }
                         </div>

@@ -2,6 +2,9 @@
 
 namespace App\Requests;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
@@ -21,10 +24,20 @@ class PlayerRequest extends BaseRequest
     public $lastName;
 
     #[Type('numeric')]
-    #[NotNull()]
     #[Range(min: 0)]
-    public $value;
+    public $value = 0;
 
     #[Type('numeric')]
     public $teamId;
+
+    #[Image()]
+    #[File(['maxSize' => '2M'])]
+    public $photo;
+
+    protected function extractData(Request $request): array
+    {
+        $data = parent::extractData($request);
+        $data['photo'] = $request->files->get('photo');
+        return $data;
+    }
 }

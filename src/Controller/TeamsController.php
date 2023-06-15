@@ -9,6 +9,7 @@ use App\Repository\TeamRepository;
 use App\Repository\TransactionRepository;
 use App\Requests\BuyRequest;
 use App\Requests\PaginationRequest;
+use App\Requests\TeamQuery;
 use App\Requests\TeamRequest;
 use App\Responses\TeamResponse;
 use App\Services\FileService;
@@ -27,13 +28,17 @@ class TeamsController extends AbstractController
     ) {
     }
     #[Route('/api/teams', name: 'team_list', methods: ['GET'])]
-    public function index(PaginationRequest $request, PlayerRepository $playerRepository): JsonResponse
+    public function index(TeamQuery $request, PlayerRepository $playerRepository): JsonResponse
     {
         $request->validate();
 
-        $query = $this->teamRepository->createQueryBuilder('t')
-            ->orderBy('t.' . $request->sortBy, $request->dir)
-            ->getQuery();
+        $qb = $this->teamRepository->createQueryBuilder('t')
+            ->orderBy('t.' . $request->sortBy, $request->dir);
+        if ($request->search) {
+            $qb->where('LOWER(t.name) like LOWER(:name)')
+                ->setParameter('name', '%' . $request->search . '%');
+        }
+        $query = $qb->getQuery();
 
         $paginator = new Paginator($query);
 
@@ -68,7 +73,6 @@ class TeamsController extends AbstractController
         $team = new Team;
         $team->fromRequest($request);
 
-        // TODO logo upload
         if ($request->logo) {
             $url = $fileService->saveTeamLogoFromBlob($request->logo);
             $team->setLogo($url);

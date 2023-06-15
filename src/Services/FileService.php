@@ -13,7 +13,6 @@ class FileService
         private ParameterBagInterface $params,
         private SluggerInterface $slugger
     ) {
-
     }
 
     public function saveTeamLogoFromBlob(mixed $file)
@@ -22,6 +21,13 @@ class FileService
         $file->move($this->params->get('image_upload_directory') . '/team_logos', $newFilename);
 
         return self::UPLOADED_FILE_URL_PREFIX . '/team_logos/' . $newFilename;
+    }
+    public function saveTeamPhotoFromBlob(mixed $file)
+    {
+        $newFilename = $this->generateFileName($file);
+        $file->move($this->params->get('image_upload_directory') . '/players', $newFilename);
+
+        return self::UPLOADED_FILE_URL_PREFIX . '/players/' . $newFilename;
     }
 
     private function generateFileName(mixed $file)

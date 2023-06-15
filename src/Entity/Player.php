@@ -23,8 +23,8 @@ class Player
     #[ORM\Column(length: 255)]
     private ?string $lastName = null;
 
-    #[ORM\Column(type: Types::BIGINT)]
-    private ?string $value = null;
+    #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
+    private ?int $value = 0;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo = null;
@@ -33,7 +33,7 @@ class Player
     private ?int $teamId = null;
 
     #[ORM\ManyToOne(inversedBy: 'players')]
-    #[ORM\JoinColumn(name: "teamId", referencedColumnName:"id")]
+    #[ORM\JoinColumn(name: "teamId", referencedColumnName: "id")]
     private ?Team $team = null;
 
     #[ORM\OneToMany(mappedBy: 'player', targetEntity: Transaction::class, orphanRemoval: true)]
