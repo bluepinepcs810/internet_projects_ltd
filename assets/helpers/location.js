@@ -1,3 +1,3 @@
-// import { Country } from "country-state-city";
+import { Country } from "country-state-city";
 
-// export const countries = Country.getAllCountries();
+export const countries = Country.getAllCountries();

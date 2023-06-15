@@ -4,6 +4,7 @@ import Teams from "./pages/teams"
 import Players from "./pages/players"
 import DashboardLayout from "./layout/dashboard_layout"
 import NewTeam from './pages/new_team';
+import 'toastr/build/toastr.min.css';
 
 const App = () => {
     return (

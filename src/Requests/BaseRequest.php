@@ -12,7 +12,6 @@ abstract class BaseRequest
     public function __construct(protected ValidatorInterface $validator)
     {
         $this->populate();
-
         if ($this->autoValidateRequest()) {
             $this->validate();
         }
@@ -52,11 +51,15 @@ abstract class BaseRequest
     {
         $request = $this->getRequest();
 
-        $data = array_merge($request->request->all(), $request->query->all());
+        $data = $this->extractData($request);
         foreach ($data as $property => $value) {
             if (property_exists($this, $property)) {
                 $this->{$property} = $value;
             }
         }
+    }
+    protected function extractData(Request $request): array
+    {
+        return array_merge($request->request->all(), $request->query->all());
     }
 }

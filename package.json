@@ -33,8 +33,12 @@
         "postcss": "^8.4.24",
         "postcss-loader": "^7.3.3",
         "react-debounce-input": "^3.3.0",
+        "react-dropzone": "^14.2.3",
+        "react-hook-form": "^7.44.3",
+        "react-query": "^3.39.3",
         "react-router": "^6.13.0",
         "react-router-dom": "^6.13.0",
-        "tailwindcss": "^3.3.2"
+        "tailwindcss": "^3.3.2",
+        "toastr": "^2.1.4"
     }
 }

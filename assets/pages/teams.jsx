@@ -1,9 +1,22 @@
 import { Avatar, Button, Card, CardBody, CardHeader, Input, Typography } from '@material-tailwind/react';
 import React from 'react';
 import { useNavigate } from 'react-router';
+import { useTeamList } from '../hooks/api_hooks';
+import { useForm } from 'react-hook-form';
 
 const Teams = () => {
     const navigate = useNavigate();
+    const { register, watch } = useForm({
+        defaultValues: {
+            search: ''
+        }
+    });
+    const search = watch('search');
+    const {
+        data,
+        isSuccess,
+        hasNextPage
+    } = useTeamList({ search });
 
     return (
         <div className='mt-12 mb-8 flex flex-col gap-12'>
@@ -16,7 +29,7 @@ const Teams = () => {
                 <CardBody className='overflow-x-auto px-4 pt-4 pb-2 min-h-[600px]'>
                     <div className='flex justify-between'>
                         <div className='mr-auto md:mr-4 md:w-56'>
-                            <Input label='Search Team' />
+                            <Input label='Search Team' {...register('search')} />
                         </div>
                         <div className='flex'>
                             <Button
@@ -43,6 +56,35 @@ const Teams = () => {
                                 </tr>
                             </thead>
                             <tbody>
+                                {isSuccess &&
+                                    data.pages.map(page =>
+                                        page.data.map(item => (
+                                            <tr>
+                                                <td className='border-b border-blue-gray-50' style={{ maxWidth: '30px'}}>
+                                                    <div className='flex items-center gap-4'>
+                                                        {item.logo &&
+                                                            <img src={item.logo}
+                                                                className='w-24 h-16 object-contain'
+                                                            />
+                                                        }
+                                                    </div>
+                                                </td>
+                                                <td className='border-b border-blue-gray-50'>
+                                                    {item.name}
+                                                </td>
+                                                <td className='border-b border-blue-gray-50'>
+                                                    {item.country}
+                                                </td>
+                                                <td className='border-b border-blue-gray-50'>
+                                                    {item.money??0}
+                                                </td>
+                                                <td className='border-b border-blue-gray-50'>
+                                                    {item.playerCount}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )
+                                }
                                 <tr>
                                     <td className='border-b border-blue-gray-50' style={{ maxWidth: '30px'}}>
                                         <div className='flex items-center gap-4'>

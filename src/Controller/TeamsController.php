@@ -11,6 +11,7 @@ use App\Requests\BuyRequest;
 use App\Requests\PaginationRequest;
 use App\Requests\TeamRequest;
 use App\Responses\TeamResponse;
+use App\Services\FileService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -53,12 +54,16 @@ class TeamsController extends AbstractController
     }
 
     #[Route('/api/teams', name: 'team_create', methods: ['POST'])]
-    public function create(TeamRequest $request): JsonResponse
+    public function create(TeamRequest $request, FileService $fileService): JsonResponse
     {
         $team = new Team;
         $team->fromRequest($request);
 
         // TODO logo upload
+        if ($request->logo) {
+            $url = $fileService->saveTeamLogoFromBlob($request->logo);
+            $team->setLogo($url);
+        }
 
         $this->teamRepository->save($team);
         $this->entityManager->flush();
