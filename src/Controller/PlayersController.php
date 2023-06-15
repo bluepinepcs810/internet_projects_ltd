@@ -23,7 +23,7 @@ class PlayersController extends AbstractController
     )
     {}
 
-    #[Route('/players', name: 'players_list')]
+    #[Route('/api/players', name: 'players_list')]
     public function index(PlayerQuery $request): JsonResponse
     {
         $qb = $this->playerRepository->createQueryBuilder('t')
@@ -56,7 +56,7 @@ class PlayersController extends AbstractController
         return $this->json($result);
     }
 
-    #[Route('/players', name: 'players_create', methods: ['POST'])]
+    #[Route('/api/players', name: 'players_create', methods: ['POST'])]
     public function create(PlayerRequest $request)
     {
         if ($request->teamId)
@@ -76,7 +76,7 @@ class PlayersController extends AbstractController
         return $this->json(PlayerResponse::toArray($player));
     }
 
-    #[Route('/players/{playerId}', name: 'players_retrieve', methods: ['GET'])]
+    #[Route('/api/players/{playerId}', name: 'players_retrieve', methods: ['GET'])]
     public function retrieve($playerId): JsonResponse
     {
         $player = $this->playerRepository->find($playerId);
@@ -87,7 +87,7 @@ class PlayersController extends AbstractController
         return $this->json(PlayerResponse::toArray($player));
     }
 
-    #[Route('/players/{playerId}', name: 'players_update', methods: ['POST'])]
+    #[Route('/api/players/{playerId}', name: 'players_update', methods: ['POST'])]
     public function update($playerId, PlayerRequest $request): JsonResponse
     {
         $player = $this->playerRepository->find($playerId);

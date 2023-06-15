@@ -25,7 +25,7 @@ class TeamsController extends AbstractController
         protected TeamRepository $teamRepository
     )
     {}
-    #[Route('/teams', name: 'team_list', methods: ['GET'])]
+    #[Route('/api/teams', name: 'team_list', methods: ['GET'])]
     public function index(PaginationRequest $request): JsonResponse
     {
         $request->validate();
@@ -52,7 +52,7 @@ class TeamsController extends AbstractController
         return $this->json($result);
     }
 
-    #[Route('/teams', name: 'team_create', methods: ['POST'])]
+    #[Route('/api/teams', name: 'team_create', methods: ['POST'])]
     public function create(TeamRequest $request): JsonResponse
     {
         $team = new Team;
@@ -65,7 +65,7 @@ class TeamsController extends AbstractController
         return $this->json(TeamResponse::toArray($team));
     }
 
-    #[Route('/teams/{teamId}', methods: ['GET'])]
+    #[Route('/api/teams/{teamId}', methods: ['GET'])]
     public function retrieve($teamId): JsonResponse
     {
         $team = $this->teamRepository->findOneBy(['id' => $teamId]);
@@ -75,7 +75,7 @@ class TeamsController extends AbstractController
         return $this->json(TeamResponse::toArray($team));
     }
 
-    #[Route('/teams/{teamId}', methods: ['POST'])]
+    #[Route('/api/teams/{teamId}', methods: ['POST'])]
     public function update(TeamRequest $teamRequest, $teamId): JsonResponse
     {
         $team = $this->teamRepository->findOneBy(['id' => $teamId]);
@@ -89,7 +89,7 @@ class TeamsController extends AbstractController
         return $this->json(TeamResponse::toArray($team));
     }
 
-    #[Route('/teams/{teamId}/buy/players/{playerId}', methods: ['POST'])]
+    #[Route('/api/teams/{teamId}/buy/players/{playerId}', methods: ['POST'])]
     public function buy($teamId, $playerId, BuyRequest $request, PlayerRepository $playerRepository, TransactionRepository $transactionRepository): JsonResponse
     {
         $team = $this->teamRepository->find($teamId);

@@ -121,6 +121,8 @@ RUN set -eux; \
 
 RUN rm -f .env.local.php
 
+# FROM node:16-alpine as front
+
 # Caddy image
 FROM caddy:2-alpine AS app_caddy
 
