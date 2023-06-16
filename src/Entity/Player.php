@@ -110,7 +110,6 @@ class Player
         $this->firstName = $request->firstName;
         $this->lastName = $request->lastName;
         $this->value = $request->value;
-        $this->teamId = $request->teamId;
 
         return $this;
     }
