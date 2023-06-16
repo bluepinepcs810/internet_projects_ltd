@@ -161,6 +161,7 @@ const PlayerForm = ({ data, teamId, onSuccess }) => {
                     </div>
                     <div className="w-full md:w-1/2">
                         <Rdropzone dropzoneClass="h-40"
+                            dropzoneLabel={"Drag & drop Player's Photo"}
                             onChange={handlePhotoChange}
                             file={photo}
                         />

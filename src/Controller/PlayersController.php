@@ -38,6 +38,14 @@ class PlayersController extends AbstractController
             $qb->where('t.team = :team')
                 ->setParameter('team', $request->teamId);
         }
+        if ($request->notTeamId) {
+            $team = $teamRepository->find($request->notTeamId);
+            if (!$team) {
+                return $this->json(['message' => 'Team not found'], 404);
+            }
+            $qb->where('t.team != :team')
+                ->setParameter('team', $request->notTeamId);
+        }
         if ($request->search) {
             $qb->where("LOWER(CONCAT(t.firstName, ' ', t.lastName)) like LOWER(:search)")
                 ->setParameter('search', '%' . $request->search . '%');

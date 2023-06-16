@@ -13,6 +13,7 @@ const TeamDetail = () => {
     const { teamId } = useParams();
     const { data, isLoading, isSuccess } = useTeamDetail(teamId);
     const [adding, setAdding] = useState(false);
+    const [buying, setBuying] = useState(false);
     const navigate = useNavigate();
 
     const { register, watch } = useForm({
@@ -39,10 +40,18 @@ const TeamDetail = () => {
         fetchNextPage: fetchNextPlayers
     } = usePlayerList({ search: debouncedSearch, teamId });
 
+    const {
+        data: otherPlayerList,
+        isSuccess: otherPlayerSuccess,
+        hasNextPage: otherPlayerHasNext,
+        isLoading: otherPlayerLoading,
+        fetchNextPage: fetchOtherPlayerNext,
+    } = usePlayerList({ search: debouncedSearch, notTeamId: teamId });
+
     const onPlayerAdd = useCallback(() => {
         queryClient.invalidateQueries({ queryKey: ['playerList'] });
         setAdding(false);
-    }, [queryClient])
+    }, [queryClient]);
 
     return (
         <div className='mb-8 flex flex-col gap-12'>
@@ -88,7 +97,7 @@ const TeamDetail = () => {
                 <Card className="mt-6">
                     <CardHeader variant='gradient' color="blue" className='mb-8 p-6'>
                         <Typography variant="h6" color='white'>
-                            { data.name }'s Players
+                            {!buying ? `${data.name}'s Players` : 'Buying ...'}
                         </Typography>
                     </CardHeader>
                     <CardBody className='overflow-x-auto px-4 pt-4 pb-2 min-h-[600px]'>
@@ -103,46 +112,113 @@ const TeamDetail = () => {
                             <div className='mr-auto md:mr-4 md:w-56'>
                                 <Input label='Search Player' {...register('search')} />
                             </div>
-                            <div className='flex'>
-                                <Button
-                                    variant='gradient'
-                                    onClick={() => setAdding(old => !old)}
-                                >{adding ? 'Cancel' : '+ Add a Player'}</Button>
+                            <div className='flex gap-x-4'>
+                                {!buying &&
+                                    <Button
+                                        variant='gradient'
+                                        onClick={() => setAdding(old => !old)}
+                                    >{adding ? 'Cancel' : '+ Add a Player'}</Button>
+                                }
+                                {!adding &&
+                                    <Button
+                                        variant='gradient'
+                                        onClick={() => setBuying(old => !old)}
+                                    >{buying ? 'Cancel' : 'Buy Player'}</Button>
+                                }
                             </div>
                         </div>
-                        <div className='w-full flex flex-wrap mt-10'>
-                            {playerLoadingSuccess &&
-                                playerList.pages.map(page =>
-                                    page.data.map(item => (
-                                        <div className="sm:w-1/2 md:w-1/3 lg:w-1/4 px-4 cursor-pointer " key={item.id}
-                                            onClick={() => navigate(`players/${item.id}`)}
-                                        >
-                                            <div className={"rounded-md flex gap-x-4 cursor-pointer overflow-hidden w-full " +
-                                                "border border-gray-200 p-2 hover:bg-gray-200"}
-                                                key={item.id}
-                                            >
-                                                <div>
-                                                    <img src={item.photo} className="object-cover w-20 h-20 rounded-md" />
+                        {!buying &&
+                            <>
+                                <div className='w-full flex flex-wrap mt-10 gap-y-2'>
+                                    {playerLoadingSuccess &&
+                                        playerList.pages.map(page =>
+                                            page.data.map(item => (
+                                                <div className="sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 cursor-pointer " key={item.id}
+                                                    onClick={() => navigate(`players/${item.id}`)}
+                                                >
+                                                    <div className={"rounded-md flex gap-x-4 cursor-pointer overflow-hidden w-full " +
+                                                        "border border-gray-200 p-2 hover:bg-gray-200"}
+                                                        key={item.id}
+                                                    >
+                                                        <div>
+                                                            <img src={item.photo} className="object-cover w-20 h-20 rounded-md" />
+                                                        </div>
+                                                        <div className="flex items-center">
+                                                            <Typography className="text-xl">{item.firstName} {item.lastName}</Typography>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center">
-                                                    <Typography className="text-xl">{item.firstName} {item.lastName}</Typography>
+                                            )))
+                                    }
+                                </div>
+                                <div className='flex justify-center mt-4 py-4'>
+                                    {(playerLoading || playerFetching) &&
+                                        <Spinner className='h-8 w-8' />
+                                    }
+                                    {!playerLoading && hasNextPlayer && !playerFetching &&
+                                        <Button
+                                            variant='outlined'
+                                            onClick={fetchNextPlayers}
+                                        >Load More</Button>
+                                    }
+                                </div>
+                            </>
+                        }
+                        {buying &&
+                            <>
+                                <div className='w-full flex flex-wrap mt-10 gap-y-2'>
+                                    {otherPlayerSuccess &&
+                                        otherPlayerList.pages.map(page =>
+                                            page.data.map(item => (
+                                                <div className="sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 cursor-pointer " key={item.id}
+                                                    onClick={() => navigate(`players/${item.id}`)}
+                                                >
+                                                    <div className={"rounded-md flex gap-x-4 cursor-pointer overflow-hidden w-full " +
+                                                        "border border-gray-200 p-2 hover:bg-gray-200"}
+                                                        key={item.id}
+                                                    >
+                                                        <div>
+                                                            <img src={item.photo} className="object-cover w-20 h-20 rounded-md" />
+                                                        </div>
+                                                        <div className="flex flex-col gap-y-1">
+                                                            <Typography className="text-xl">{item.firstName} {item.lastName}</Typography>
+                                                            <div>
+                                                                {item.team &&
+                                                                    <div className='flex gap-x-2 mb-1'>
+                                                                        <>
+                                                                            <img src={item.team.logo || DEFAULT_TEAM_LOGO} className='w-6 h-6 object-contain' />
+                                                                            <Typography variant="small">{item.team.name}</Typography>
+                                                                        </>
+                                                                    </div>
+                                                                }
+                                                                {item.country &&
+                                                                    <div className='flex gap-x-2'>
+                                                                        <>
+                                                                            <img src={countries.find(c => item.country === c.name)?.flag} className='w-6 h-6 object-contain' />
+                                                                            <Typography variant="small">{countries.find(c => item.country === c.name)?.shortCode}</Typography>
+                                                                        </>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    )))
-                            }
-                        </div>
-                        <div className='flex justify-center mt-4 py-4'>
-                            {(playerLoading || playerFetching) &&
-                                <Spinner className='h-8 w-8' />
-                            }
-                            {!playerLoading && hasNextPlayer && !playerFetching &&
-                                <Button
-                                    variant='outlined'
-                                    onClick={fetchNextPlayers}
-                                >Load More</Button>
-                            }
-                        </div>
+                                            )))
+                                    }
+                                </div>
+                                <div className='flex justify-center mt-4 py-4'>
+                                    {(otherPlayerLoading) &&
+                                        <Spinner className='h-8 w-8' />
+                                    }
+                                    {!otherPlayerLoading && otherPlayerHasNext &&
+                                        <Button
+                                            variant='outlined'
+                                            onClick={fetchOtherPlayerNext}
+                                        >Load More</Button>
+                                    }
+                                </div>
+                            </>
+                        }
                     </CardBody>
                 </Card>
             }

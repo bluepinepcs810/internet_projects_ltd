@@ -124,6 +124,7 @@ const TeamForm = ({ data }) => {
                     </div>
                     <div className="w-full md:w-1/2">
                         <Rdropzone dropzoneClass="h-40"
+                            dropzoneLabel={"Drag & drop Team's Logo"}
                             onChange={handleLogoChange}
                             file={logo}
                         />
