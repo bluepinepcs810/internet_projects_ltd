@@ -20,6 +20,7 @@ const Teams = () => {
         isSuccess,
         hasNextPage,
         isLoading,
+        isFetching,
         fetchNextPage
     } = useTeamList({ search: debouncedSearch });
 
@@ -94,12 +95,12 @@ const Teams = () => {
                             </tbody>
                         </table>
                         <div className='flex justify-center mt-4'>
-                            {isLoading &&
+                            {(isLoading || isFetching) &&
                                 <Spinner className='h-8 w-8' />
                             }
-                            {!isLoading && hasNextPage &&
+                            {!isLoading && hasNextPage && !isFetching &&
                                 <Button
-                                    variant='outline'
+                                    variant='outlined'
                                     onClick={fetchNextPage}
                                 >Load More</Button>
                             }

@@ -65,13 +65,14 @@ class PlayersController extends AbstractController
     #[Route('/api/players', name: 'players_create', methods: ['POST'])]
     public function create(PlayerRequest $request, FileService $fileService, TeamRepository $teamRepository)
     {
-        if ($request->teamId) {
-            $team = $teamRepository->find($request->teamId);
-            if (!$team) return $this->json(['message' => 'Team not found'], 404);
-        }
 
         $player = new Player;
         $player->fromRequest($request);
+        if ($request->teamId) {
+            $team = $teamRepository->find($request->teamId);
+            if (!$team) return $this->json(['message' => 'Team not found'], 404);
+            $player->setTeam($team);
+        }
 
         if ($request->photo) {
             $url = $fileService->saveTeamPhotoFromBlob($request->photo);

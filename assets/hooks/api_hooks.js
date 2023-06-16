@@ -15,7 +15,6 @@ export const useTeamList = (filter) => {
     },
     {
       getNextPageParam: (lastPage, allPages) => {
-        if (lastPage.data.length) return undefined;
         if (lastPage.data.length < DEFAULT_PAGE_SIZE) return undefined
         return allPages.length + 1;
       },
@@ -48,7 +47,6 @@ export const usePlayerList = (filter) => {
     },
     {
       getNextPageParam: (lastPage, allPages) => {
-        if (lastPage.data.length) return undefined;
         if (lastPage.data.length < DEFAULT_PAGE_SIZE) return undefined
         return allPages.length + 1;
       },

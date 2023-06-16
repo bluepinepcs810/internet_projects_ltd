@@ -18,17 +18,21 @@ const PlayerDetail = () => {
     const [buying, setBuying] = useState(false);
     const queryClient = useQueryClient();
 
-    const { register, formState: { errors }, handleSubmit, control, watch } = useForm({
+    const { register, formState: { errors }, handleSubmit, control, watch, setError } = useForm({
         defaultValues: {
             amount: 0,
             teamId: '7'
         }
     })
     const trackTeamId = watch('teamId');
-    const handleConfirm = useCallback((data) => {
-        if (buying || !teamId || !playerId) return;
+    const handleConfirm = useCallback((transactionData) => {
+        if (buying || !playerId) return;
+        if (data.teamId === transactionData.teamId) {
+            setError('teamId', 'You can not select player\'s current team');
+            return;
+        }
         setBuying(true);
-        TeamApi.buy(data.teamId, playerId, data.amount)
+        TeamApi.buy(transactionData.teamId, playerId, transactionData.amount)
             .then((response) => {
                 queryClient.invalidateQueries({ queryKey: ['retrievePlayer'] });
                 showSuccess(`${response.lastName} moved to ${response.team.name}`);
@@ -40,7 +44,7 @@ const PlayerDetail = () => {
             .finally(() => {
                 setBuying(false);
             });
-    }, [buying]);
+    }, [buying, data, playerId, queryClient]);
 
     return (
         <div className='mb-8 flex flex-col gap-12'>
@@ -89,7 +93,7 @@ const PlayerDetail = () => {
                     }
                 </CardBody>
             </Card>
-            {data && teamId &&
+            {data &&
                 <Dialog open={buyOpen} variant="gradient">
                     <DialogHeader>Are you really want { data.firstName } { data.lastName }?</DialogHeader>
                     <DialogBody divider>
@@ -100,7 +104,7 @@ const PlayerDetail = () => {
                                     {...register('amount', {
                                         required: 'Please input amount',
                                         valueAsNumber: true,
-                                        validate: (value) => value < 0 ? 'Please input positive amount' : true
+                                        validate: (value) => value <= 0 ? 'Please input positive amount' : true
                                     })}
                                     type="number"
                                     error={!!errors.amount}
@@ -113,7 +117,7 @@ const PlayerDetail = () => {
                                 )}
                             </div>
                             <div>
-                                {teamsSuccess && teams &&
+                                {teamsSuccess && teams && data &&
                                     <Controller
                                         name="teamId"
                                         control={control}
@@ -121,7 +125,7 @@ const PlayerDetail = () => {
                                         render={({ field }) => (
                                             <>
                                                     <Select {...field} label="To Team" value={trackTeamId}>
-                                                        {teams.data.filter(item => item.id != teamId).map(team => (
+                                                        {teams.data.filter(item => item.id != data.teamId).map(team => (
                                                             <Option key={team.id} value={team.id.toString()}>
                                                                 <div className="flex gap-x-2 items-center">
                                                                     <img src={team.logo || DEFAULT_TEAM_LOGO} className="w-6 h-4"/>

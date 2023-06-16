@@ -1,10 +1,12 @@
 import React, { useCallback, useState } from "react";
-import { Button, Input, Spinner, Typography } from "@material-tailwind/react";
+import { Button, Input, Option, Select, Spinner, Typography } from "@material-tailwind/react";
 import Rdropzone from "./rdropzone";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { showError, showSuccess } from "../helpers/toastr";
 import { InformationCircleIcon } from "@heroicons/react/24/solid"
 import { PlayerApi } from "../api/player";
+import { DEFAULT_TEAM_LOGO } from "../helpers/constants";
+import { useAllTeams } from "../hooks/api_hooks";
 
 const PlayerForm = ({ data, teamId, onSuccess }) => {
     const {
@@ -13,7 +15,8 @@ const PlayerForm = ({ data, teamId, onSuccess }) => {
         watch,
         setValue,
         clearErrors,
-        handleSubmit
+        handleSubmit,
+        control
     } = useForm({
         defaultValues: {
             firstName: data?.name,
@@ -24,6 +27,8 @@ const PlayerForm = ({ data, teamId, onSuccess }) => {
     });
 
     const [loading, setLoading] = useState(false);
+
+    const { data: teams, isSuccess: teamsSuccess } = useAllTeams();
 
     const photo = watch('photo', null);
 
@@ -78,7 +83,7 @@ const PlayerForm = ({ data, teamId, onSuccess }) => {
                                 </Typography>
                             )}
                         </div>
-                        <div className="form-control">
+                        <div className="form-control mb-5">
                             <Input
                                 label="Last Name"
                                 {...register('lastName', {
@@ -97,6 +102,35 @@ const PlayerForm = ({ data, teamId, onSuccess }) => {
                                 </Typography>
                             )}
                         </div>
+                        {!(data?.teamId) && !teamId && teamsSuccess && teams &&
+                            <div className="form-control">
+                                <Controller
+                                    name="teamId"
+                                    control={control}
+                                    rules={{ required: "Please select team" }}
+                                    render={({ field }) => (
+                                        <>
+                                            <Select {...field} label="To Team">
+                                                {teams.data.map(team => (
+                                                    <Option key={team.id} value={team.id.toString()}>
+                                                        <div className="flex gap-x-2 items-center">
+                                                            <img src={team.logo || DEFAULT_TEAM_LOGO} className="w-6 h-4"/>
+                                                            <div>{team.name}</div>
+                                                        </div>
+                                                    </Option>
+                                                ))}
+                                            </Select>
+                                        </>
+                                    )}
+                                />
+                                {errors.teamId && (
+                                    <Typography variant="small" color="red" className="flex items-center gap-1 font-normal mt-2">
+                                        <InformationCircleIcon className="w-4 h-4 -mt-px" color="red" />
+                                        {errors.teamId.message}
+                                    </Typography>
+                                )}
+                            </div>
+                        }
                     </div>
                     <div className="w-full md:w-1/2">
                         <Rdropzone dropzoneClass="h-40"

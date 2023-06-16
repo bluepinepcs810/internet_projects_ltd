@@ -35,6 +35,7 @@ const TeamDetail = () => {
         isSuccess: playerLoadingSuccess,
         hasNextPage: hasNextPlayer,
         isLoading: playerLoading,
+        isFetching: playerFetching,
         fetchNextPage: fetchNextPlayers
     } = usePlayerList({ search: debouncedSearch, teamId });
 
@@ -132,12 +133,12 @@ const TeamDetail = () => {
                             }
                         </div>
                         <div className='flex justify-center mt-4 py-4'>
-                            {playerLoading &&
+                            {(playerLoading || playerFetching) &&
                                 <Spinner className='h-8 w-8' />
                             }
-                            {!playerLoading && hasNextPlayer &&
+                            {!playerLoading && hasNextPlayer && !playerFetching &&
                                 <Button
-                                    variant='outline'
+                                    variant='outlined'
                                     onClick={fetchNextPlayers}
                                 >Load More</Button>
                             }
