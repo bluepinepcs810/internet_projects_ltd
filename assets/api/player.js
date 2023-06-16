@@ -6,6 +6,7 @@ const create = async (data) => {
   formData.append('firstName', data.firstName);
   formData.append('lastName', data.lastName);
   formData.append('teamId', data.teamId);
+  formData.append('country', data.country);
 
   if (data.photo && data.photo.file) {
     formData.append('photo', data.photo.file);

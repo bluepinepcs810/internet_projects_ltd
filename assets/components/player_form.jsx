@@ -7,6 +7,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid"
 import { PlayerApi } from "../api/player";
 import { DEFAULT_TEAM_LOGO } from "../helpers/constants";
 import { useAllTeams } from "../hooks/api_hooks";
+import { countries } from "../helpers/location";
 
 const PlayerForm = ({ data, teamId, onSuccess }) => {
     const {
@@ -19,9 +20,10 @@ const PlayerForm = ({ data, teamId, onSuccess }) => {
         control
     } = useForm({
         defaultValues: {
-            firstName: data?.name,
-            lastName: data?.country,
+            firstName: data?.firstName,
+            lastName: data?.lastName,
             teamId: teamId ?? (data?.teamId),
+            country: data?.country,
             photo: data?.photo
         }
     });
@@ -103,7 +105,7 @@ const PlayerForm = ({ data, teamId, onSuccess }) => {
                             )}
                         </div>
                         {!(data?.teamId) && !teamId && teamsSuccess && teams &&
-                            <div className="form-control">
+                            <div className="form-control mb-5">
                                 <Controller
                                     name="teamId"
                                     control={control}
@@ -131,6 +133,31 @@ const PlayerForm = ({ data, teamId, onSuccess }) => {
                                 )}
                             </div>
                         }
+                        <div className="form-control mb-5">
+                            <Controller
+                                name="country"
+                                control={control}
+                                rules={{ required: "Please select country" }}
+                                render={({ field }) => (
+                                    <Select {...field} label="Nationality">
+                                        {countries.map(country => (
+                                            <Option key={country.name} value={country.name}>
+                                                <div className="flex gap-x-2 items-center">
+                                                    <img src={country.flag} className="w-6 h-4"/>
+                                                    <div>{country.name}</div>
+                                                </div>
+                                            </Option>
+                                        ))}
+                                    </Select>
+                                )}
+                            />
+                            {errors.country && (
+                                <Typography variant="small" color="red" className="flex items-center gap-1 font-normal mt-2">
+                                    <InformationCircleIcon className="w-4 h-4 -mt-px" color="red" />
+                                    {errors.country.message}
+                                </Typography>
+                            )}
+                        </div>
                     </div>
                     <div className="w-full md:w-1/2">
                         <Rdropzone dropzoneClass="h-40"

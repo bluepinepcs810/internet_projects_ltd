@@ -29,6 +29,10 @@ class Player
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo = null;
 
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $country = null;
+
     #[ORM\ManyToOne(inversedBy: 'players')]
     private ?Team $team = null;
 
@@ -104,12 +108,22 @@ class Player
 
         return $this;
     }
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+    public function setCountry($country): static
+    {
+        $this->country = $country;
+        return $this;
+    }
 
     public function fromRequest(PlayerRequest $request): static
     {
         $this->firstName = $request->firstName;
         $this->lastName = $request->lastName;
         $this->value = $request->value;
+        $this->country = $request->country;
 
         return $this;
     }

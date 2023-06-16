@@ -34,6 +34,12 @@ class PlayerRequest extends BaseRequest
     #[File(['maxSize' => '2M'])]
     public $photo;
 
+
+    #[Type('string')]
+    #[NotBlank()]
+    #[Length(min: 1, max: 50)]
+    public $country;
+
     protected function extractData(Request $request): array
     {
         $data = parent::extractData($request);

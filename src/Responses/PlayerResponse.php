@@ -21,6 +21,7 @@ class PlayerResponse
             'lastName'  =>  $player->getLastName(),
             'value'     =>  $player->getValue(),
             'photo'     =>  $player->getPhoto(),
+            'country'   =>  $player->getCountry(),
             'teamId'    =>  $player->getTeam()?->getId(),
             'team'      =>  $team ? TeamResponse::toArray($team) : null
         ];

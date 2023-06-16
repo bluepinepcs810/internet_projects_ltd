@@ -7,6 +7,7 @@ import { DEFAULT_TEAM_LOGO } from '../helpers/constants';
 import { Button, Card, CardBody, CardHeader, Input, Spinner, Typography } from '@material-tailwind/react';
 import PlayerForm from '../components/player_form';
 import { useQueryClient } from 'react-query';
+import { countries } from '../helpers/location';
 
 const Players = () => {
     const navigate = useNavigate();
@@ -77,14 +78,24 @@ const Players = () => {
                                             <div>
                                                 <img src={item.photo} className="object-cover w-20 h-20 rounded-md" />
                                             </div>
-                                            <div className="flex flex-col justify-center gap-y-3">
-                                                <Typography className="text-xl">{item.firstName} {item.lastName}</Typography>
-                                                <div className='flex gap-x-2'>
+                                            <div className="flex flex-col gap-y-1">
+                                                <Typography className="text-lg">{item.firstName} {item.lastName}</Typography>
+                                                <div>
                                                     {item.team &&
-                                                        <>
-                                                            <img src={item.team.logo || DEFAULT_TEAM_LOGO} className='w-6 h-6 object-contain' />
-                                                        <Typography variant="small">{item.team.name}</Typography>
-                                                        </>
+                                                        <div className='flex gap-x-2 mb-1'>
+                                                            <>
+                                                                <img src={item.team.logo || DEFAULT_TEAM_LOGO} className='w-6 h-6 object-contain' />
+                                                                <Typography variant="small">{item.team.name}</Typography>
+                                                            </>
+                                                        </div>
+                                                    }
+                                                    {item.country &&
+                                                        <div className='flex gap-x-2'>
+                                                            <>
+                                                                <img src={countries.find(c => item.country === c.name)?.flag} className='w-6 h-6 object-contain' />
+                                                                <Typography variant="small">{countries.find(c => item.country === c.name)?.shortCode}</Typography>
+                                                            </>
+                                                        </div>
                                                     }
                                                 </div>
                                             </div>

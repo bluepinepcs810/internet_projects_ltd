@@ -8,6 +8,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { TeamApi } from "../api/team";
 import { useQueryClient } from "react-query";
 import { showError, showSuccess } from "../helpers/toastr";
+import { countries } from "../helpers/location";
 
 const PlayerDetail = () => {
     const { teamId, playerId } = useParams();
@@ -21,10 +22,16 @@ const PlayerDetail = () => {
     const { register, formState: { errors }, handleSubmit, control, watch, setError } = useForm({
         defaultValues: {
             amount: 0,
-            teamId: '7'
+            teamId: teamId
         }
-    })
+    });
     const trackTeamId = watch('teamId');
+
+    const country = useMemo(() => {
+        if (!data || !data.country) return null;
+        return countries.find(item => item.name === data.country);
+    }, [data]);
+
     const handleConfirm = useCallback((transactionData) => {
         if (buying || !playerId) return;
         if (data.teamId === transactionData.teamId) {
@@ -68,16 +75,28 @@ const PlayerDetail = () => {
                                     <Typography variant="h1" color="white" className="mb-10">
                                         {data.lastName}
                                     </Typography>
-                                    {data.team &&
-                                        <div className="flex gap-x-4 items-center">
-                                            <div>
-                                                <img src={data.team.logo} className="w-10 h-10 rounded-full object-contain"/>
+                                        <div className="flex gap-x-10">
+                                        {data.team &&
+                                            <div className="flex gap-x-4 items-center">
+                                                <div>
+                                                    <img src={data.team.logo} className="w-10 h-10 rounded-full object-contain"/>
+                                                </div>
+                                                <Typography variant="h5" color="white">
+                                                    {data.team.name}
+                                                </Typography>
                                             </div>
-                                            <Typography variant="h5" color="white">
-                                                {data.team.name}
-                                            </Typography>
+                                        }
+                                        {country &&
+                                            <div className="flex gap-x-4 items-center">
+                                                <div>
+                                                    <img src={country.flag} className="w-10 h-10 object-contain"/>
+                                                </div>
+                                                <Typography variant="h5" color="white">
+                                                    {data.country}
+                                                </Typography>
+                                            </div>
+                                        }
                                         </div>
-                                    }
                                 </div>
                                 <div className="flex px-5 items-end">
                                     <Button
