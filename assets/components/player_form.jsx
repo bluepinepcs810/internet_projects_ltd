@@ -10,7 +10,6 @@ const PlayerForm = ({ data, teamId, onSuccess }) => {
     const {
         register,
         formState: { errors },
-        control,
         watch,
         setValue,
         clearErrors,
@@ -36,7 +35,7 @@ const PlayerForm = ({ data, teamId, onSuccess }) => {
             }
         }
         setValue('photo', file);
-    })
+    }, [])
 
     const onSubmit = useCallback((data) => {
         clearErrors();

@@ -29,11 +29,7 @@ class Player
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo = null;
 
-    #[ORM\Column(type: Types::INTEGER)]
-    private ?int $teamId = null;
-
     #[ORM\ManyToOne(inversedBy: 'players')]
-    #[ORM\JoinColumn(name: "teamId", referencedColumnName: "id")]
     private ?Team $team = null;
 
     #[ORM\OneToMany(mappedBy: 'player', targetEntity: Transaction::class, orphanRemoval: true)]
@@ -47,15 +43,6 @@ class Player
     public function getId(): ?int
     {
         return $this->id;
-    }
-    public function getTeamId(): ?int
-    {
-        return $this->teamId;
-    }
-    public function setTeamId($teamId): static
-    {
-        $this->teamId = $teamId;
-        return $this;
     }
 
     public function getFirstName(): ?string

@@ -7,6 +7,7 @@ import NewTeam from './pages/new_team';
 import 'toastr/build/toastr.min.css';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import TeamDetail from './pages/team_detail';
+import PlayerDetail from './pages/player_detail';
 
 const App = () => {
     const queryClient = new QueryClient();
@@ -18,7 +19,9 @@ const App = () => {
                         <Route path="/teams" element={<Teams />} />
                         <Route path="/teams/new" element={<NewTeam />} />
                         <Route path="/teams/:teamId" element={<TeamDetail />} />
+                        <Route path="/teams/:teamId/players/:playerId" element={<PlayerDetail />} />
                         <Route path="/players" element={<Players />} />
+                        <Route path="/players/:playerId" element={<PlayerDetail />} />
                     </Route>
                 </Routes>
             </QueryClientProvider>

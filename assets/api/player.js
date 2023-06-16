@@ -24,7 +24,12 @@ const list = async (filter = {}) => {
   return Api.get('/api/players', filter);
 }
 
+const retrieve = async (id) => {
+  return Api.get(`/api/players/${id}`);
+}
+
 export const PlayerApi = {
   create,
-  list
+  list,
+  retrieve
 }

@@ -41,9 +41,19 @@ const list = async (filter = {}) => {
 const retrieve = async (id) => {
   return Api.get(`/api/teams/${id}`);
 }
+
+
+const buy = async (teamId, playerId, amount) => {
+  const formData = new FormData();
+  formData.append('amount', amount)
+  return Api.post(`/api/teams/${teamId}/buy/players/${playerId}`, formData, {
+    'Content-Type': 'multipart/form-data',
+  });
+}
 export const TeamApi = {
   create,
   list,
   update,
-  retrieve
+  retrieve,
+  buy
 }

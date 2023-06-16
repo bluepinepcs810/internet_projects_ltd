@@ -40,7 +40,7 @@ const TeamForm = ({ data }) => {
             }
         }
         setValue('logo', file);
-    })
+    }, [])
 
     const onSubmit = useCallback((data) => {
         clearErrors();
@@ -111,7 +111,7 @@ const TeamForm = ({ data }) => {
                                 {...register('money', {
                                     required: 'Please input current balance for the team',
                                     valueAsNumber: true,
-                                    validate: (value) => value > 0
+                                    validate: (value) => value < 0 ? 'Please input positive amount' : true
                                 })}
                             />
                             {errors.money && (

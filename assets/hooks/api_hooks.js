@@ -10,7 +10,7 @@ export const useTeamList = (filter) => {
       return TeamApi.list({
         ...filter,
         page: pageParam ?? 1,
-        size: DEFAULT_PAGE_SIZE
+        perPage: DEFAULT_PAGE_SIZE
       });
     },
     {
@@ -23,6 +23,9 @@ export const useTeamList = (filter) => {
     }
   )
 }
+
+export const useAllTeams = () =>
+  useQuery(['teamList', 'all'], () => TeamApi.list({ page: 1, perPage: 99999 }));
 
 export const useTeamDetail = (teamId) =>
   useQuery(['retrieveTeam', teamId], () => {
@@ -40,7 +43,7 @@ export const usePlayerList = (filter) => {
       return PlayerApi.list({
         ...filter,
         page: pageParam ?? 1,
-        size: DEFAULT_PAGE_SIZE
+        perPage: DEFAULT_PAGE_SIZE
       });
     },
     {
@@ -53,3 +56,13 @@ export const usePlayerList = (filter) => {
     }
   )
 }
+
+
+export const usePlayerDetail = (playerId) =>
+  useQuery(['retrievePlayer', playerId.toString()], () => {
+    if (!playerId) return undefined;
+    return PlayerApi.retrieve(playerId);
+  }, {
+    enabled: !!playerId
+  })
+

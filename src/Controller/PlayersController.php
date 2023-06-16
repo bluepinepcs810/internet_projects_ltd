@@ -26,13 +26,17 @@ class PlayersController extends AbstractController
     }
 
     #[Route('/api/players', name: 'players_list', methods: ['GET'])]
-    public function index(PlayerQuery $request): JsonResponse
+    public function index(PlayerQuery $request, TeamRepository $teamRepository): JsonResponse
     {
         $qb = $this->playerRepository->createQueryBuilder('t')
             ->orderBy('t.' . $request->sortBy, $request->dir);
         if ($request->teamId) {
-            $qb->where('t.teamId = :teamId')
-                ->setParameter('teamId', $request->teamId);
+            $team = $teamRepository->find($request->teamId);
+            if (!$team) {
+                return $this->json(['message' => 'Team not found'], 404);
+            }
+            $qb->where('t.team = :team')
+                ->setParameter('team', $request->teamId);
         }
         if ($request->search) {
             $qb->where("LOWER(CONCAT(t.firstName, ' ', t.lastName)) like LOWER(:search)")

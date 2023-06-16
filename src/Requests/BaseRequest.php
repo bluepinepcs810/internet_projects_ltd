@@ -50,7 +50,6 @@ abstract class BaseRequest
     protected function populate(): void
     {
         $request = $this->getRequest();
-
         $data = $this->extractData($request);
         foreach ($data as $property => $value) {
             if (property_exists($this, $property)) {
@@ -60,6 +59,9 @@ abstract class BaseRequest
     }
     protected function extractData(Request $request): array
     {
+        if ($request->headers->get('Content-Type') === 'application/json') {
+            return json_decode($request->getContent(), true);
+        }
         return array_merge($request->request->all(), $request->query->all());
     }
 }

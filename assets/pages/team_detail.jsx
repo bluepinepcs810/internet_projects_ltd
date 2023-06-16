@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { usePlayerList, useTeamDetail } from "../hooks/api_hooks";
 import { Button, Card, CardBody, CardHeader, Input, Spinner, Typography } from "@material-tailwind/react";
 import { DEFAULT_TEAM_LOGO } from "../helpers/constants";
@@ -13,6 +13,7 @@ const TeamDetail = () => {
     const { teamId } = useParams();
     const { data, isLoading, isSuccess } = useTeamDetail(teamId);
     const [adding, setAdding] = useState(false);
+    const navigate = useNavigate();
 
     const { register, watch } = useForm({
         defaultValues: {
@@ -35,7 +36,7 @@ const TeamDetail = () => {
         hasNextPage: hasNextPlayer,
         isLoading: playerLoading,
         fetchNextPage: fetchNextPlayers
-    } = usePlayerList({ search: debouncedSearch });
+    } = usePlayerList({ search: debouncedSearch, teamId });
 
     const onPlayerAdd = useCallback(() => {
         queryClient.invalidateQueries({ queryKey: ['playerList'] });
@@ -74,7 +75,7 @@ const TeamDetail = () => {
                                 </div>
                                 <div className="px-6 flex items-center">
                                     <Typography color="white" className="text-7xl">
-                                        $634,663,000
+                                        ${new Intl.NumberFormat().format(data.money)}
                                     </Typography>
                                 </div>
                             </div>
@@ -112,7 +113,9 @@ const TeamDetail = () => {
                             {playerLoadingSuccess &&
                                 playerList.pages.map(page =>
                                     page.data.map(item => (
-                                        <div className="sm:w-1/2 md:w-1/3 lg:w-1/4 px-4" key={item.id}>
+                                        <div className="sm:w-1/2 md:w-1/3 lg:w-1/4 px-4 cursor-pointer " key={item.id}
+                                            onClick={() => navigate(`players/${item.id}`)}
+                                        >
                                             <div className={"rounded-md flex gap-x-4 cursor-pointer overflow-hidden w-full " +
                                                 "border border-gray-200 p-2 hover:bg-gray-200"}
                                                 key={item.id}

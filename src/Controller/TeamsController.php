@@ -11,8 +11,10 @@ use App\Requests\BuyRequest;
 use App\Requests\PaginationRequest;
 use App\Requests\TeamQuery;
 use App\Requests\TeamRequest;
+use App\Responses\PlayerResponse;
 use App\Responses\TeamResponse;
 use App\Services\FileService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -52,8 +54,8 @@ class TeamsController extends AbstractController
             ->getResult();
         foreach ($teams as $team) {
             $playerCount = $playerRepository->createQueryBuilder('p')
-                ->where('p.teamId = :teamId')
-                ->setParameter('teamId', $team->getId())
+                ->where('p.team = :team')
+                ->setParameter('team', $team)
                 ->select('count(p.id)')
                 ->getQuery()
                 ->getSingleScalarResult();
@@ -123,6 +125,9 @@ class TeamsController extends AbstractController
 
         $fromTeam = $player->getTeam();
         if ($fromTeam) {
+            if ($fromTeam->getId() === $team->getId()) {
+                return $this->json(['message', 'The same to and from teams'], 404);
+            }
             $fromTeam->increaseMoney($request->amount);
             $team->decreaseMoney($request->amount);
             $this->teamRepository->save($fromTeam);
@@ -136,9 +141,11 @@ class TeamsController extends AbstractController
         $transaction->setPlayer($player);
         $transaction->setFromTeam($fromTeam);
         $transaction->setToTeam($team);
+        $transaction->setCreatedAt(new DateTime());
 
         $transactionRepository->save($transaction);
+        $this->entityManager->flush();
 
-        return $this->json(['message' => 'Success']);
+        return $this->json(PlayerResponse::toArray($player));
     }
 }

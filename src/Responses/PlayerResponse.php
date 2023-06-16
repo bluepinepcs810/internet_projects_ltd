@@ -10,7 +10,9 @@ class PlayerResponse
     public static function toArray(Player|array|Collection $player)
     {
         if (is_array($player) || $player instanceof Collection) {
-            return array_map(function ($item) { return self::toArray($item); }, is_array($player) ? $player : $player->toArray());
+            return array_map(function ($item) {
+                return self::toArray($item);
+            }, is_array($player) ? $player : $player->toArray());
         }
         $team = $player->getTeam();
         return [
@@ -19,6 +21,7 @@ class PlayerResponse
             'lastName'  =>  $player->getLastName(),
             'value'     =>  $player->getValue(),
             'photo'     =>  $player->getPhoto(),
+            'teamId'    =>  $player->getTeam()->getId(),
             'team'      =>  $team ? TeamResponse::toArray($team) : null
         ];
     }
